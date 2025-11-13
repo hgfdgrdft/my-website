@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETC - Emotional Trash Can 🔥</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Set default font to Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Light gray background: #d9d9d9 (As requested) */
+            background-color: #d9d9d9;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrolling when animation goes outside */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Define animation for flushing text down */
+        @keyframes flush-down {
+            0% { 
+                transform: translateY(0) scale(1) rotate(0deg); 
+                opacity: 1; 
+                filter: blur(0px);
+                color: #374151; /* Initial text color */
+            }
+            70% { 
+                transform: translateY(10vh) scale(1.03) rotate(1deg); 
+                opacity: 0.7; 
+                color: #555; /* Darken slightly in the middle */
+            }
+            100% { 
+                /* Text flushes completely down and disappears */
+                transform: translateY(100vh) scale(0.5) rotate(5deg); 
+                opacity: 0; 
+                filter: blur(5px);
+                color: #000;
+            }
+        }
+
+        /* Apply animation class to the text area */
+        .flushing {
+            animation: flush-down 1.5s ease-in-out forwards;
+            animation-delay: 0.1s; /* Slight delay after button click */
+        }
+        
+        /* Text input area style */
+        #trash-input {
+            width: 100%;
+            height: 100%;
+            min-height: 250px;
+            aspect-ratio: 1 / 1;
+            box-sizing: border-box;
+            background-color: #ffffff; /* White paper color */
+            color: #374151; /* Dark gray text */
+            transition: all 0.3s ease; /* Smooth reset after animation */
+        }
+        
+    </style>
+</head>
+<body class="p-4">
+    <div class="container flex flex-col items-center w-[90vw] max-w-sm">
+        <!-- Title and Description -->
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2">ETC - Emotional Trash Can</h1>
+        <p class="text-sm text-gray-600 mb-4 text-center">Pour out your stress and worries here, then hit the button to flush them away.</p>
+        
+        <!-- Text Input Area (Square shape) -->
+        <textarea id="trash-input" 
+            class="p-4 text-lg border-2 border-gray-300 rounded-xl shadow-lg resize-none focus:border-red-500 focus:ring-red-500 transition duration-300"
+            placeholder="Write down the burden in your heart..."
+            rows="10"></textarea>
+
+        <!-- Trash Button -->
+        <button id="flush-btn"
+            class="mt-6 w-12 h-12 bg-red-600 hover:bg-red-700 active:bg-red-800 rounded-lg shadow-xl 
+                   flex justify-center items-center transform transition duration-150 ease-in-out hover:scale-110 
+                   focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50"
+            title="Flush Away Emotions">
+            
+            <!-- Trash Icon (Inline SVG for simplicity) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                <path d="M3 6h18"/>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                <line x1="10" y1="11" x2="10" y2="17"/>
+                <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+        </button>
+        
+        <!-- Message Box -->
+        <div id="message-box" class="fixed bottom-0 mb-4 p-3 bg-green-500 text-white rounded-xl shadow-lg transition-opacity duration-500 opacity-0 transform translate-y-2 pointer-events-none">
+            Successfully Flushed Away!
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const inputElement = document.getElementById('trash-input');
+        const buttonElement = document.getElementById('flush-btn');
+        const messageBox = document.getElementById('message-box');
+
+        // Button click event listener
+        buttonElement.addEventListener('click', () => {
+            const textContent = inputElement.value.trim();
+
+            if (textContent === "") {
+                // If there's no content entered
+                showMessage("There's nothing to flush!", "bg-yellow-500");
+                return;
+            }
+
+            // 1. Add animation class
+            inputElement.classList.add('flushing');
+            
+            // 2. Disable button (to prevent duplicate clicks during animation)
+            buttonElement.disabled = true;
+            
+            // 3. Post-animation processing (1.5s + 0.1s delay)
+            setTimeout(() => {
+                // Clear input content after the animation ends
+                inputElement.value = '';
+                
+                // Remove animation class and reset the element
+                // This ensures the animation can restart from the beginning for the next input.
+                inputElement.classList.remove('flushing');
+                
+                // Re-enable the button
+                buttonElement.disabled = false;
+                
+                // Display success message
+                showMessage("Successfully Flushed Away!", "bg-green-500");
+
+            }, 1600); // Set slightly longer than the animation duration (1.5s)
+        });
+
+        // Function to display the message box
+        function showMessage(msg, bgColor) {
+            messageBox.textContent = msg;
+            messageBox.className = `fixed bottom-0 mb-4 p-3 text-white rounded-xl shadow-lg transition-opacity duration-500 transform translate-y-2 pointer-events-none ${bgColor} opacity-100`;
+            
+            // Hide the message box after 2 seconds
+            setTimeout(() => {
+                messageBox.classList.add('opacity-0');
+                messageBox.classList.remove('opacity-100');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
